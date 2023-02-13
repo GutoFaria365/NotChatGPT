@@ -15,15 +15,20 @@ public class Server {
 
             while (true) {
                 clientSocket = serverSocket.accept();
+
+                System.out.println("new client");
+
                 inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 outPut = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
                 consoleInput = new BufferedReader(new InputStreamReader(System.in));
-                while (!clientSocket.isClosed()) {
+                String msgReceived;
+                String msgToSend;
+                while ((msgReceived = inputReader.readLine()) != null) {
 
-                    String msgReceived = inputReader.readLine();
                     System.out.println("Message received: ".concat(msgReceived));
 
-                    String msgToSend = consoleInput.readLine();
+                    msgToSend = consoleInput.readLine();
+
                     outPut.write(msgToSend);
                     outPut.newLine();
                     outPut.flush();
@@ -34,6 +39,5 @@ public class Server {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

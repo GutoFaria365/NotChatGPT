@@ -16,6 +16,11 @@ public class Client {
 
             while (!socket.isClosed()) {
                 String msgToSend = inputReader.readLine();
+
+                if (msgToSend.compareTo("EXIT") == 0) {
+                    break;
+                }
+
                 output.write(msgToSend);
                 output.newLine();
                 output.flush();
@@ -25,6 +30,12 @@ public class Client {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
