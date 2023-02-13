@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Server {
+public class ServerExperimental {
+    private static List<Socket> clientConnections = new ArrayList<>();
 
     public static void main(String[] args) {
         ServerSocket serverSocket;
-        List<String> users = new ArrayList<>();
         try {
             serverSocket = new ServerSocket(8080);
             while (true) {
                 ExecutorService chat = Executors.newCachedThreadPool();
                 final Socket clientSocket = serverSocket.accept();
+
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
@@ -24,13 +25,11 @@ public class Server {
                 outputName.flush();
 
                 String userName = consoleInput.readLine();
-                users.add(userName);
                 System.out.println(userName.concat(" has joined the server"));
 
                 chat.submit(new Thread(() -> {
-
                     try {
-                        newClient(userName, clientSocket);
+                        newClient(userName, clientSocket, clientConnections);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -41,20 +40,26 @@ public class Server {
         }
     }
 
-    private static void newClient(String user, Socket socket) throws IOException {
+    private static void newClient(String user, Socket socket, List<Socket> socketList) throws IOException {
+        socketList.add(socket);
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        BufferedWriter outPut = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        // BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
         String msgReceived;
-        String msgToSend;
 
         while ((msgReceived = inputReader.readLine()) != null) {
             System.out.println("Message received: ".concat(msgReceived));
-            outPut.write(user + ": " + msgReceived);
+
+            // Broadcast the received message to all clients
+            broadcastMessage(user + ": " + msgReceived);
+        }
+        socketList.remove(socket);
+    }
+
+    private static void broadcastMessage(String message) throws IOException {
+        for (Socket client : clientConnections) {
+            BufferedWriter outPut = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+            outPut.write(message);
             outPut.newLine();
             outPut.flush();
-
-            // msgToSend = consoleInput.readLine();
         }
     }
 }
