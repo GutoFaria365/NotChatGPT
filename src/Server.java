@@ -14,18 +14,17 @@ public class Server {
             while (true) {
                 ExecutorService chat = Executors.newCachedThreadPool();
                 final Socket clientSocket = serverSocket.accept();
-
                 id++;
+                System.out.println("New user joined the server");
 
-                for (int i = 0; i < id; i++) {
-                    chat.submit(new Thread(() -> {
-                        try {
-                            newClient(clientSocket);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }));
-                }
+                chat.submit(new Thread(() -> {
+                    try {
+                        newClient(clientSocket);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }));
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -35,7 +34,7 @@ public class Server {
     private static void newClient(Socket socket) throws IOException {
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         BufferedWriter outPut = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        BufferedReader consoleInput= new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
         String msgReceived;
         String msgToSend;
         while ((msgReceived = inputReader.readLine()) != null) {
