@@ -29,7 +29,7 @@ public class ServerExperimental {
 
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedWriter outputName = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                outputName.write(YELLOW + "Please insert your username" + RESET);
+                outputName.write(YELLOW + "Please insert your username (" + RED + "EXIT" + YELLOW + " to leave the room, and " + PINK + "@+username" + YELLOW + " to send pm)" + RESET);
                 outputName.newLine();
                 outputName.flush();
 
