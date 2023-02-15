@@ -18,6 +18,7 @@ public class ServerExperimental {
     private static HashMap<String, Socket> clientMap = new HashMap<>();
 
     public static void main(String[] args) {
+
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(8080);
@@ -53,6 +54,7 @@ public class ServerExperimental {
         }
     }
 
+    
     private static void newClient(String user, Socket socket, List<Socket> socketList, HashMap<String, Socket> clientMap) throws IOException {
         socketList.add(socket);
         clientMap.put(user, socket);
@@ -72,6 +74,7 @@ public class ServerExperimental {
             }
         }
         socketList.remove(socket);
+        clientMap.remove(user, socket);
         broadcastMessage(YELLOW + user.concat(" has left the server").toUpperCase() + RESET);
         writeHistory(user.concat(" has left the server").toUpperCase());
         System.out.println(YELLOW + user.concat(" has left the server").toUpperCase() + RESET);
